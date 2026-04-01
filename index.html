@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#c55a8b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Malin Flow" />
+  <title>Malin Flow</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #fff7fb;
+      --bg2: #fff0f6;
+      --panel: rgba(255,255,255,.92);
+      --line: #efcfdf;
+      --line-strong: #e3b5cf;
+      --text: #5b3550;
+      --muted: #8c6a7f;
+      --accent: #c55a8b;
+      --accent-dark: #a94373;
+      --accent-soft: #ffe4f0;
+      --good: #e8f7ef;
+      --warn: #fff4d6;
+      --danger: #ffe4e4;
+      --shadow: 0 14px 36px rgba(197,90,139,.14);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #ffe5f0 0%, transparent 28%),
+        radial-gradient(circle at 85% 8%, #fff0d9 0%, transparent 20%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    }
+    .app { max-width: 1100px; margin: 0 auto; padding: calc(14px + var(--safe-top)) 14px calc(96px + var(--safe-bottom)); }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      margin: -14px -14px 14px; padding: calc(12px + var(--safe-top)) 14px 12px;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(255,247,251,.96), rgba(255,247,251,.82));
+      border-bottom: 1px solid rgba(239,207,223,.75);
+    }
+    .brand-row { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .brand-title { font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .pill {
+      display:inline-flex; align-items:center; gap:6px; padding:8px 10px;
+      border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--muted); font-size:12px;
+    }
+    .hero, .panel {
+      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow);
+    }
+    .hero { padding: 18px; margin-bottom: 14px; }
+    .hero h1 { margin: 0; font-size: 28px; letter-spacing: -.04em; }
+    .hero p { margin: 8px 0 0; color: var(--muted); line-height: 1.5; }
+    .hero-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:16px; }
+    .stat { background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px; }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-value { margin-top: 6px; font-size: 24px; font-weight: 800; }
+    .grid { display:grid; gap:14px; }
+    .panel { padding: 16px; }
+    .section-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:12px; }
+    h2 { margin: 0; font-size: 19px; }
+    .help { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .field, .textarea, .select, .number {
+      width:100%; border:1px solid var(--line-strong); border-radius:14px; background:#fff; color:var(--text);
+      font:inherit; padding:12px 13px; outline:none;
+    }
+    .textarea { min-height: 96px; resize: vertical; }
+    .field:focus, .textarea:focus, .select:focus, .number:focus { box-shadow:0 0 0 4px rgba(197,90,139,.14); }
+    .form-row { display:grid; gap:10px; grid-template-columns: 1fr; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    button {
+      border:0; border-radius:14px; padding:12px 14px; font:inherit; font-weight:700; cursor:pointer;
+    }
+    .primary { background: linear-gradient(180deg, var(--accent), var(--accent-dark)); color:#fff; }
+    .secondary { background:#fff; border:1px solid var(--line-strong); color:var(--text); }
+    .ghost { background:transparent; border:1px dashed var(--line-strong); color:var(--muted); }
+    .list { display:grid; gap:10px; }
+    .card-item {
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:13px;
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+    }
+    .card-title { font-weight: 700; }
+    .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .tag { display:inline-flex; padding:6px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent-dark); font-size:12px; border:1px solid var(--line); }
+    .check { width: 22px; height: 22px; accent-color: var(--accent); }
+    .small-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .budget-list { display:grid; gap:10px; }
+    .budget-row {
+      display:grid; gap:8px; grid-template-columns: 1.2fr .8fr .6fr auto;
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:10px;
+      align-items:center;
+    }
+    .money { font-variant-numeric: tabular-nums; }
+    .empty { padding: 18px; border:1px dashed var(--line-strong); border-radius:16px; color:var(--muted); text-align:center; background:#fff; }
+    .status-box { display:flex; gap:10px; align-items:flex-start; padding:12px; border-radius:16px; background:#fff; border:1px solid var(--line); }
+    .status-dot { width:10px; height:10px; border-radius:50%; margin-top:4px; background:#bbb; }
+    .status-dot.ok { background:#56b67a; }
+    .status-dot.warn { background:#e4b548; }
+    .status-dot.off { background:#c97a7a; }
+    .desktop-only { display:none; }
+    .tabs {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      padding: 10px 10px calc(10px + var(--safe-bottom));
+      background: linear-gradient(180deg, rgba(255,247,251,.82), rgba(255,247,251,.96));
+      backdrop-filter: blur(14px); border-top:1px solid rgba(239,207,223,.8);
+    }
+    .tabbar { max-width: 1100px; margin: 0 auto; display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; }
+    .tab-btn {
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:10px 8px; color:var(--muted);
+      display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; font-weight:700;
+    }
+    .tab-btn.active { background: var(--accent-soft); color: var(--accent-dark); border-color: var(--line-strong); }
+    .screen { display:none; }
+    .screen.active { display:grid; }
+    .kpi-grid { display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
+    .right { text-align:right; }
+    .sync-note { font-size: 12px; color: var(--muted); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    @media (min-width: 840px) {
+      .app { padding-bottom: 28px; }
+      .tabs { position: static; padding: 0; border: 0; background: transparent; backdrop-filter:none; margin-bottom: 14px; }
+      .tabbar { grid-template-columns: repeat(4, max-content); justify-content:start; }
+      .desktop-split { display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; }
+      .hero-grid { grid-template-columns: repeat(4, 1fr); }
+      .desktop-only { display:block; }
+    }
+    @media (max-width: 520px) {
+      .hero h1 { font-size: 24px; }
+      .hero-grid, .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .budget-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand-row">
+        <div>
+          <div class="brand-title">Malin Flow</div>
+          <div class="brand-sub">En riktig phone-first webbapp för iPhone + Chrome på Mac</div>
+        </div>
+        <div class="pill" id="syncBadge">⚪ Lokal demo</div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="pill">✨ Fokus först · mobil först · delad mellan enheter</div>
+      <h1 id="weekLabel">Vecka</h1>
+      <p>Den här versionen är byggd för att kännas som en riktig app i telefonen, men också fungera bra i Chrome på din Mac. När Firebase är inkopplat sparas ändringar mellan båda enheterna.</p>
+      <div class="hero-grid">
+        <div class="stat"><div class="stat-label">Veckofokus</div><div class="stat-value" id="focusPreview">–</div></div>
+        <div class="stat"><div class="stat-label">Klara idag</div><div class="stat-value" id="doneToday">0</div></div>
+        <div class="stat"><div class="stat-label">Kvar i veckan</div><div class="stat-value" id="leftWeek">0</div></div>
+        <div class="stat"><div class="stat-label">Kvar att leva på</div><div class="stat-value money" id="liveLeft">0 kr</div></div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <div class="tabbar">
+        <button class="tab-btn active" data-tab="today">💗<span>Idag</span></button>
+        <button class="tab-btn" data-tab="week">🗓️<span>Vecka</span></button>
+        <button class="tab-btn" data-tab="money">💸<span>Pengar</span></button>
+        <button class="tab-btn" data-tab="settings">⚙️<span>Sync</span></button>
+      </div>
+    </nav>
+
+    <section class="screen active grid" id="screen-today">
+      <div class="desktop-split">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Dagens fokus</h2>
+              <div class="help">En sak som verkligen spelar roll.</div>
+            </div>
+          </div>
+          <input class="field" id="focusInput" placeholder="Till exempel: hålla det enkelt, göra det viktiga först" />
+          <div class="actions">
+            <button class="primary" id="saveFocusBtn">Spara fokus</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Snabbstatus</h2>
+              <div class="help">Det viktigaste just nu.</div>
+            </div>
+          </div>
+          <div class="kpi-grid">
+            <div class="status-box"><div class="status-dot ok"></div><div><strong id="clockNow">--:--</strong><div class="meta">Stockholm tid</div></div></div>
+            <div class="status-box"><div class="status-dot warn"></div><div><strong id="syncText">Lokal demo</strong><div class="meta" id="lastSaved">Inte sparad i molnet ännu</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Idag-lista</h2>
+            <div class="help">Snabb att använda med tummen på iPhone.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <input class="field" id="todayTaskInput" placeholder="Lägg till uppgift" />
+          <div class="actions"><button class="primary" id="addTodayTaskBtn">Lägg till</button></div>
+        </div>
+        <div class="list" id="todayList"></div>
+      </div>
+    </section>
+
+    <section class="screen grid" id="screen-week">
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Veckoplan</h2>
+            <div class="help">Det som inte blir klart följer med till nästa vecka när du gör en rollover.</div>
+          </div>
+          <button class="secondary" id="rolloverBtn">Ny vecka med carry-over</button>
+        </div>
+        <div class="form-row">
+          <input class="field" id="weekTaskInput" placeholder="Veckouppgift eller plan" />
+          <div class="actions"><button class="primary" id="addWeekTaskBtn">Lägg till</button></div>
+        </div>
+        <div class="list" id="weekList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Arkiv</h2>
+            <div class="help">Avklarat eller stängt från tidigare veckor.</div>
+          </div>
+        </div>
+        <div class="list" id="archiveList"></div>
+      </div>
+    </section>
+
+    <section class="screen grid" id="screen-money">
+      <div class="desktop-split">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Budgetöversikt</h2>
+              <div class="help">Lättare för telefon än ett stort spreadsheet.</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <input class="number" id="incomeInput" type="number" placeholder="Månadsinkomst" />
+            <input class="number" id="saveTargetInput" type="number" placeholder="Målsparande" />
+          </div>
+          <div class="actions"><button class="primary" id="saveBudgetMetaBtn">Spara budgetram</button></div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Snabba siffror</h2>
+              <div class="help">Det du vill förstå direkt.</div>
+            </div>
+          </div>
+          <div class="kpi-grid">
+            <div class="stat"><div class="stat-label">Inkomst</div><div class="stat-value money" id="incomeStat">0 kr</div></div>
+            <div class="stat"><div class="stat-label">Fasta + flex</div><div class="stat-value money" id="spentStat">0 kr</div></div>
+            <div class="stat"><div class="stat-label">Spara</div><div class="stat-value money" id="saveStat">0 kr</div></div>
+            <div class="stat"><div class="stat-label">Kvar</div><div class="stat-value money" id="liveStat">0 kr</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Budgetposter</h2>
+            <div class="help">Mer snabbmobil än Excel-känsla.</div>
+          </div>
+        </div>
+        <div class="budget-row" style="background:transparent; border:0; padding:0;">
+          <input class="field" id="budgetNameInput" placeholder="Kategori, t.ex. Hyra eller Häst" />
+          <input class="number" id="budgetAmountInput" type="number" placeholder="Belopp" />
+          <select class="select" id="budgetTypeInput">
+            <option value="fixed">Fast</option>
+            <option value="flex">Flex</option>
+            <option value="save">Spara</option>
+          </select>
+          <button class="primary" id="addBudgetBtn">Lägg till</button>
+        </div>
+        <div class="budget-list" id="budgetList"></div>
+      </div>
+    </section>
+
+    <section class="screen grid" id="screen-settings">
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Sync och installation</h2>
+            <div class="help">Här ser du om appen kör lokal demo eller riktig sync via Firebase.</div>
+          </div>
+        </div>
+        <div class="status-box">
+          <div class="status-dot off" id="syncDot"></div>
+          <div>
+            <strong id="syncModeTitle">Lokal demo</strong>
+            <div class="meta" id="syncModeText">Lägg in Firebase-konfiguration för att dela samma data mellan iPhone och Mac.</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="secondary" id="exportBtn">Exportera backup</button>
+          <label class="secondary" style="display:inline-flex; align-items:center; cursor:pointer;">Importera<input type="file" id="importInput" accept="application/json" hidden></label>
+        </div>
+        <div class="help" style="margin-top:12px;">
+          Delat workspace-id: <span class="mono" id="workspaceIdText">malin-default</span><br>
+          Du kan byta workspace genom att lägga till <span class="mono">?workspace=namn</span> i länken om du vill testa olika versioner.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./firebase-config.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js';
+
+    const $ = (id) => document.getElementById(id);
+    const state = {
+      focus: '',
+      todayTasks: [],
+      weekTasks: [],
+      archive: [],
+      budgetMeta: { income: 0, saveTarget: 0 },
+      budgetItems: [],
+      updatedAt: null,
+    };
+
+    const params = new URLSearchParams(location.search);
+    const workspaceId = params.get('workspace') || 'malin-default';
+    $('workspaceIdText').textContent = workspaceId;
+
+    const storageKey = `malin-flow-${workspaceId}`;
+    let db = null;
+    let cloudDocRef = null;
+    let saveTimer = null;
+    let syncEnabled = false;
+    let suppressCloudWrite = false;
+
+    function getWeekNumber(d = new Date()) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function nowStamp() {
+      return new Date().toISOString();
+    }
+
+    function formatMoney(v) {
+      const n = Number(v || 0);
+      return `${n.toLocaleString('sv-SE')} kr`;
+    }
+
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) Object.assign(state, JSON.parse(raw));
+      } catch (e) {
+        console.warn('Could not load local data', e);
+      }
+    }
+
+    function saveLocal() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function queueCloudSave() {
+      saveLocal();
+      if (!syncEnabled || suppressCloudWrite) return;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          state.updatedAt = nowStamp();
+          await setDoc(cloudDocRef, structuredClone(state), { merge: true });
+          updateSyncUi('Synkad', `Senast sparad ${new Date().toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'})}`, 'ok');
+        } catch (e) {
+          console.error(e);
+          updateSyncUi('Syncfel', 'Kunde inte spara till Firestore', 'off');
+        }
+      }, 350);
+    }
+
+    async function initFirebaseIfAvailable() {
+      if (!window.FIREBASE_CONFIG || !window.FIREBASE_CONFIG.apiKey) {
+        updateSyncUi('Lokal demo', 'Ingen Firebase-konfiguration hittad ännu', 'warn');
+        return;
+      }
+      try {
+        const app = initializeApp(window.FIREBASE_CONFIG);
+        db = getFirestore(app);
+        cloudDocRef = doc(db, 'dashboards', workspaceId);
+        syncEnabled = true;
+        updateSyncUi('Molnsync aktiv', 'Laddar senaste data…', 'ok');
+        const snap = await getDoc(cloudDocRef);
+        if (snap.exists()) Object.assign(state, snap.data());
+        renderAll();
+        onSnapshot(cloudDocRef, (docSnap) => {
+          if (!docSnap.exists()) return;
+          const remote = docSnap.data();
+          suppressCloudWrite = true;
+          Object.assign(state, remote);
+          renderAll();
+          saveLocal();
+          suppressCloudWrite = false;
+          const stamp = remote.updatedAt ? new Date(remote.updatedAt) : new Date();
+          updateSyncUi('Synkad', `Senast uppdaterad ${stamp.toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'})}`, 'ok');
+        });
+      } catch (e) {
+        console.error(e);
+        updateSyncUi('Syncfel', 'Firebase kunde inte starta', 'off');
+      }
+    }
+
+    function updateSyncUi(title, subtitle, mode) {
+      $('syncBadge').textContent = mode === 'ok' ? '🟢 Molnsync' : mode === 'warn' ? '🟡 Lokal demo' : '🔴 Syncfel';
+      $('syncText').textContent = title;
+      $('lastSaved').textContent = subtitle;
+      $('syncModeTitle').textContent = title;
+      $('syncModeText').textContent = subtitle;
+      $('syncDot').className = `status-dot ${mode === 'ok' ? 'ok' : mode === 'warn' ? 'warn' : 'off'}`;
+    }
+
+    function renderAll() {
+      $('weekLabel').textContent = `Vecka ${getWeekNumber()} · ${new Date().toLocaleDateString('sv-SE', { month:'long', day:'numeric' })}`;
+      $('focusInput').value = state.focus || '';
+      $('focusPreview').textContent = state.focus ? state.focus.slice(0, 8) : '–';
+      $('incomeInput').value = state.budgetMeta.income || '';
+      $('saveTargetInput').value = state.budgetMeta.saveTarget || '';
+      renderToday();
+      renderWeek();
+      renderBudget();
+      updateStats();
+    }
+
+    function updateStats() {
+      const doneToday = state.todayTasks.filter(t => t.done).length;
+      const leftWeek = state.weekTasks.filter(t => !t.done).length;
+      const income = Number(state.budgetMeta.income || 0);
+      const spent = state.budgetItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const save = state.budgetItems.filter(x => x.type === 'save').reduce((sum, x) => sum + Number(x.amount || 0), 0);
+      const live = Math.max(0, income - spent);
+      $('doneToday').textContent = String(doneToday);
+      $('leftWeek').textContent = String(leftWeek);
+      $('liveLeft').textContent = formatMoney(live);
+      $('incomeStat').textContent = formatMoney(income);
+      $('spentStat').textContent = formatMoney(spent);
+      $('saveStat').textContent = formatMoney(save);
+      $('liveStat').textContent = formatMoney(live);
+    }
+
+    function renderToday() {
+      const list = $('todayList');
+      list.innerHTML = '';
+      if (!state.todayTasks.length) {
+        list.innerHTML = '<div class="empty">Inga dagens uppgifter ännu.</div>';
+        return;
+      }
+      state.todayTasks.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'card-item';
+        el.innerHTML = `
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <input class="check" type="checkbox" ${item.done ? 'checked' : ''}>
+            <div>
+              <div class="card-title">${escapeHtml(item.title)}</div>
+              <div class="meta">${item.done ? 'Klar' : 'Kvar idag'}</div>
+            </div>
+          </div>
+          <button class="secondary">Ta bort</button>`;
+        el.querySelector('input').addEventListener('change', e => {
+          item.done = e.target.checked;
+          state.updatedAt = nowStamp();
+          renderAll();
+          queueCloudSave();
+        });
+        el.querySelector('button').addEventListener('click', () => {
+          state.todayTasks = state.todayTasks.filter(x => x.id !== item.id);
+          renderAll();
+          queueCloudSave();
+        });
+        list.appendChild(el);
+      });
+    }
+
+    function renderWeek() {
+      const list = $('weekList');
+      list.innerHTML = '';
+      if (!state.weekTasks.length) list.innerHTML = '<div class="empty">Inga veckouppgifter ännu.</div>';
+      state.weekTasks.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'card-item';
+        el.innerHTML = `
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <input class="check" type="checkbox" ${item.done ? 'checked' : ''}>
+            <div>
+              <div class="card-title">${escapeHtml(item.title)}</div>
+              <div class="meta">${item.week || `Vecka ${getWeekNumber()}`}</div>
+            </div>
+          </div>
+          <button class="secondary">Arkivera</button>`;
+        el.querySelector('input').addEventListener('change', e => {
+          item.done = e.target.checked;
+          renderAll();
+          queueCloudSave();
+        });
+        el.querySelector('button').addEventListener('click', () => {
+          state.archive.unshift({ ...item, archivedAt: nowStamp() });
+          state.weekTasks = state.weekTasks.filter(x => x.id !== item.id);
+          renderAll();
+          queueCloudSave();
+        });
+        list.appendChild(el);
+      });
+
+      const archive = $('archiveList');
+      archive.innerHTML = '';
+      if (!state.archive.length) archive.innerHTML = '<div class="empty">Inget i arkivet ännu.</div>';
+      state.archive.slice(0, 20).forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'card-item';
+        el.innerHTML = `<div><div class="card-title">${escapeHtml(item.title)}</div><div class="meta">${item.week || ''}</div></div><span class="tag">Arkiv</span>`;
+        archive.appendChild(el);
+      });
+    }
+
+    function renderBudget() {
+      const list = $('budgetList');
+      list.innerHTML = '';
+      if (!state.budgetItems.length) list.innerHTML = '<div class="empty">Inga budgetposter ännu.</div>';
+      state.budgetItems.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'budget-row';
+        el.innerHTML = `
+          <div><div class="card-title">${escapeHtml(item.name)}</div><div class="meta">${item.type === 'fixed' ? 'Fast' : item.type === 'flex' ? 'Flex' : 'Spara'}</div></div>
+          <div class="money right">${formatMoney(item.amount)}</div>
+          <div>${item.type === 'save' ? '💗' : item.type === 'fixed' ? '🏠' : '✨'}</div>
+          <button class="secondary">Ta bort</button>`;
+        el.querySelector('button').addEventListener('click', () => {
+          state.budgetItems = state.budgetItems.filter(x => x.id !== item.id);
+          renderAll();
+          queueCloudSave();
+        });
+        list.appendChild(el);
+      });
+    }
+
+    function escapeHtml(str = '') {
+      return str.replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function makeId() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+
+    function addTodayTask() {
+      const title = $('todayTaskInput').value.trim();
+      if (!title) return;
+      state.todayTasks.unshift({ id: makeId(), title, done: false, createdAt: nowStamp() });
+      $('todayTaskInput').value = '';
+      renderAll();
+      queueCloudSave();
+    }
+
+    function addWeekTask() {
+      const title = $('weekTaskInput').value.trim();
+      if (!title) return;
+      state.weekTasks.unshift({ id: makeId(), title, done: false, week: `Vecka ${getWeekNumber()}`, createdAt: nowStamp() });
+      $('weekTaskInput').value = '';
+      renderAll();
+      queueCloudSave();
+    }
+
+    function addBudgetItem() {
+      const name = $('budgetNameInput').value.trim();
+      const amount = Number($('budgetAmountInput').value || 0);
+      const type = $('budgetTypeInput').value;
+      if (!name || !amount) return;
+      state.budgetItems.unshift({ id: makeId(), name, amount, type });
+      $('budgetNameInput').value = '';
+      $('budgetAmountInput').value = '';
+      renderAll();
+      queueCloudSave();
+    }
+
+    function doRollover() {
+      const carry = state.weekTasks.filter(x => !x.done).map(x => ({ ...x, week: `Vecka ${getWeekNumber() + 1}` }));
+      const done = state.weekTasks.filter(x => x.done).map(x => ({ ...x, archivedAt: nowStamp() }));
+      state.archive = [...done, ...state.archive].slice(0, 60);
+      state.weekTasks = carry;
+      state.todayTasks = [];
+      renderAll();
+      queueCloudSave();
+    }
+
+    function saveFocus() {
+      state.focus = $('focusInput').value.trim();
+      renderAll();
+      queueCloudSave();
+    }
+
+    function saveBudgetMeta() {
+      state.budgetMeta = {
+        income: Number($('incomeInput').value || 0),
+        saveTarget: Number($('saveTargetInput').value || 0),
+      };
+      renderAll();
+      queueCloudSave();
+    }
+
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `malin-flow-${workspaceId}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          Object.assign(state, data);
+          renderAll();
+          queueCloudSave();
+        } catch {
+          alert('Kunde inte läsa backup-filen.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function setupTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          btn.classList.add('active');
+          $('screen-' + btn.dataset.tab).classList.add('active');
+        });
+      });
+    }
+
+    function tickClock() {
+      $('clockNow').textContent = new Date().toLocaleTimeString('sv-SE', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    $('saveFocusBtn').addEventListener('click', saveFocus);
+    $('addTodayTaskBtn').addEventListener('click', addTodayTask);
+    $('addWeekTaskBtn').addEventListener('click', addWeekTask);
+    $('addBudgetBtn').addEventListener('click', addBudgetItem);
+    $('saveBudgetMetaBtn').addEventListener('click', saveBudgetMeta);
+    $('rolloverBtn').addEventListener('click', doRollover);
+    $('exportBtn').addEventListener('click', exportBackup);
+    $('importInput').addEventListener('change', (e) => { if (e.target.files[0]) importBackup(e.target.files[0]); });
+    $('todayTaskInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') addTodayTask(); });
+    $('weekTaskInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') addWeekTask(); });
+    tickClock();
+    setInterval(tickClock, 30000);
+    setupTabs();
+    loadLocal();
+    renderAll();
+    initFirebaseIfAvailable();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
