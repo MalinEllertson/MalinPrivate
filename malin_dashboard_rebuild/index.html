@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Malin Flow</title>
+  <meta name="theme-color" content="#f7d9e6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Malin Flow" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Malin Flow</div>
+        <h1>Din vecka, pengar och fokus</h1>
+      </div>
+      <div class="status-wrap">
+        <span class="status-dot" id="syncDot"></span>
+        <span id="syncStatus">Lokal data aktiv</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="hero card">
+        <div class="hero-top">
+          <div>
+            <div class="section-label">Veckans fokus</div>
+            <h2 id="weekTitle">Vecka</h2>
+          </div>
+          <div class="mini-meta" id="lastUpdatedLabel">Inte uppdaterad ännu</div>
+        </div>
+        <textarea id="focusText" placeholder="Vad är viktigast just nu?"></textarea>
+        <div class="hero-actions">
+          <button class="button primary" id="saveFocusBtn">Spara fokus</button>
+          <button class="button secondary" id="rolloverBtn">Ny vecka</button>
+        </div>
+      </section>
+
+      <section class="grid two-up">
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-label">Idag</div>
+              <h3>Dagens topp 3</h3>
+            </div>
+          </div>
+          <div class="input-row stack-mobile">
+            <input id="taskInput" type="text" placeholder="Lägg till uppgift" />
+            <select id="taskArea">
+              <option value="jobb">Jobb</option>
+              <option value="hem">Hem</option>
+              <option value="hälsa">Hälsa</option>
+              <option value="häst">Häst</option>
+              <option value="kul">Kul</option>
+            </select>
+            <button class="button primary" id="addTaskBtn">Lägg till</button>
+          </div>
+          <div class="task-list" id="taskList"></div>
+        </section>
+
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <div class="section-label">Pengar</div>
+              <h3>Snabb budget</h3>
+            </div>
+          </div>
+          <div class="budget-grid">
+            <label>
+              <span>Inkomst</span>
+              <input id="incomeInput" type="number" inputmode="numeric" placeholder="57000" />
+            </label>
+            <label>
+              <span>Fasta kostnader</span>
+              <input id="fixedInput" type="number" inputmode="numeric" placeholder="22000" />
+            </label>
+            <label>
+              <span>Rörligt</span>
+              <input id="variableInput" type="number" inputmode="numeric" placeholder="9000" />
+            </label>
+            <label>
+              <span>Sparande</span>
+              <input id="savingInput" type="number" inputmode="numeric" placeholder="7000" />
+            </label>
+          </div>
+          <div class="hero-actions">
+            <button class="button primary" id="saveBudgetBtn">Spara budget</button>
+          </div>
+          <div class="budget-summary">
+            <div class="summary-box">
+              <div class="summary-label">Kvar att leva på</div>
+              <div class="summary-value" id="leftToSpend">0 kr</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-label">Spargrad</div>
+              <div class="summary-value" id="savingRate">0%</div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Planering</div>
+            <h3>Veckoplan</h3>
+          </div>
+        </div>
+        <div class="input-row stack-mobile">
+          <input id="planTitle" type="text" placeholder="Lägg till plan, möte eller aktivitet" />
+          <input id="planDay" type="date" />
+          <button class="button primary" id="addPlanBtn">Lägg till plan</button>
+        </div>
+        <div class="plan-list" id="planList"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Sync & backup</div>
+            <h3>Manuell synk mellan mobil och dator</h3>
+          </div>
+        </div>
+        <p class="helper-text">
+          Utan backend kan appen inte synka automatiskt. Här kan du exportera en JSON-fil från en enhet och importera samma fil på den andra.
+        </p>
+        <div class="input-row stack-mobile">
+          <button class="button primary" id="exportBtn">Exportera data</button>
+          <label class="button secondary file-label" for="importInput">Importera data</label>
+          <input id="importInput" type="file" accept="application/json" hidden />
+          <button class="button secondary" id="copyBtn">Kopiera JSON</button>
+          <button class="button secondary" id="resetBtn">Nollställ app</button>
+        </div>
+        <textarea id="jsonBox" class="code-box" placeholder="Här kan du klistra in eller kopiera JSON om du vill flytta data manuellt."></textarea>
+        <div class="input-row stack-mobile">
+          <button class="button secondary" id="loadJsonBtn">Ladda från JSON-rutan</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="#" data-jump="0">Fokus</a>
+      <a href="#" data-jump="1">Uppgifter</a>
+      <a href="#" data-jump="2">Budget</a>
+      <a href="#" data-jump="4">Sync</a>
+    </nav>
+  </div>
+
+  <script src="sync.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

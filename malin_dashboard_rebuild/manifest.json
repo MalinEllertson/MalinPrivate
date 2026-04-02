@@ -1,0 +1,10 @@
+{
+  "name": "Malin Flow",
+  "short_name": "Malin Flow",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff7fb",
+  "theme_color": "#f7d9e6",
+  "description": "Vecka, budget och manuell sync mellan mobil och dator.",
+  "icons": []
+}
